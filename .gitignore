@@ -133,6 +133,8 @@ DocProject/Help/*.hhp
 DocProject/Help/Html2
 DocProject/Help/html
 
+CppInjector/*.dll
+
 # Click-Once directory
 publish/
 
