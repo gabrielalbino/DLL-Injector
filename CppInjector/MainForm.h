@@ -106,6 +106,7 @@ namespace CppInjector {
 			this->injectButton->TabIndex = 1;
 			this->injectButton->Text = L"Injetar";
 			this->injectButton->UseVisualStyleBackColor = true;
+			this->injectButton->Click += gcnew System::EventHandler(this, &MainForm::injectButton_Click);
 			// 
 			// exitButton
 			// 
@@ -161,6 +162,7 @@ namespace CppInjector {
 			this->deleteDLL->TabIndex = 7;
 			this->deleteDLL->Text = L"Apagar";
 			this->deleteDLL->UseVisualStyleBackColor = true;
+			this->deleteDLL->Click += gcnew System::EventHandler(this, &MainForm::deleteDLL_Click);
 			// 
 			// addDLL
 			// 
@@ -187,7 +189,7 @@ namespace CppInjector {
 			// openFileDialog1
 			// 
 			this->openFileDialog1->FileName = L"openFileDialog1";
-			this->openFileDialog1->Filter = "Dynamic-link library|*.dll";
+			this->openFileDialog1->Filter = L"Dynamic-link library|*.dll";
 			// 
 			// MainForm
 			// 
@@ -288,6 +290,57 @@ private: System::Void addDLL_Click(System::Object^  sender, System::EventArgs^  
 		GetFullPathName(fileName, 200, dest, NULL);
 		CopyFile(orig, dest, false);
 		this->DLLListBox->Items->Add(gcnew String(fileName));
+	}
+}
+private: System::Void deleteDLL_Click(System::Object^  sender, System::EventArgs^  e) {
+	char fileName[200];
+	if (this->DLLListBox->SelectedItem != NULL){ 
+		for (int i = 0; i < this->DLLListBox->SelectedItem->ToString()->Length; i++) {
+			fileName[i] = this->DLLListBox->SelectedItem->ToString()[i];
+		}
+		if (DeleteFile(fileName).ToString()) {
+			this->DLLListBox->Items->Remove(this->DLLListBox->SelectedItem);
+		}
+		else {
+			MessageBox::Show("Não foi possível deletar o arquivo.");
+		}
+	}
+}
+private: System::Void injectButton_Click(System::Object^  sender, System::EventArgs^  e) {
+	char dllPath[200], processName[200];
+	if (this->DLLListBox->SelectedIndex >= 0){ 
+		if (this->processListBox->SelectedIndex >= 0) {
+			for (int i = 0; i < this->DLLListBox->SelectedItem->ToString()->Length; i++) {
+				dllPath[i] = this->DLLListBox->SelectedItem->ToString()[i];
+			}
+			for (int i = 0; i < this->processListBox->SelectedItem->ToString()->Length; i++) {
+				processName[i] = this->processListBox->SelectedItem->ToString()[i];
+			}
+			injector->setDllPath(dllPath);
+			injector->setProcessName(processName);
+			if (injector->findProcessID()) {
+				if (injector->createProcessHandle()) {
+					if (injector->Inject()) {
+						MessageBox::Show("DLL Injetada com sucesso!");
+					}
+					else {
+						MessageBox::Show("Falha ao injetar DLL");
+					}
+				}
+				else {
+					MessageBox::Show("Falha ao criar a handle do processo");
+				}
+			}
+			else {
+				MessageBox::Show("Falha ao obter o ID do processo.");
+			}
+		}
+		else {
+			MessageBox::Show("Selecione um processo!");
+		}
+	}
+	else {
+		MessageBox::Show("Selecione uma DLL!");
 	}
 }
 };

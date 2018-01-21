@@ -17,6 +17,7 @@ public:
 	BOOL deleteProcessHandle();
 	std::list<std::string> getAllProcessNames();
 	bool findProcessID();
+	bool Inject();
 	~Injector();
 private:
 	std::string dllPath, processName;

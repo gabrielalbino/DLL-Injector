@@ -28,6 +28,10 @@ HANDLE Injector::getProcessHandle() {
 	return this->hProcess;
 }
 
+bool Injector::Inject() {
+	return true;
+}
+
 std::list<std::string> Injector::getAllProcessNames() {
 	std::list<std::string> processList;
 	PROCESSENTRY32 pEntry;
